@@ -1,0 +1,36 @@
+name: Release Windows exe
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-exe:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Instalar WiX Toolset
+        run: choco install wixtoolset -y --no-progress
+
+      - name: Gerar o .exe
+        shell: powershell
+        run: powershell -ExecutionPolicy Bypass -File .\package-windows.ps1
+
+      - name: Publicar na página de Releases
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.exe
+          generate_release_notes: true
