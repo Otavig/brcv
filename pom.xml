@@ -23,7 +23,6 @@
   </dependencies>
 
   <build>
-    <!-- o código fica em src/ (sem src/main/java) -->
     <sourceDirectory>src</sourceDirectory>
     <finalName>brcv</finalName>
 
