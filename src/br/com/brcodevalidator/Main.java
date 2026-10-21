@@ -1,5 +1,10 @@
 package br.com.brcodevalidator;
 
+import br.com.brcodevalidator.interfaces.AlgorithmInterface;
+import br.com.brcodevalidator.strategy.BrCodeDynamic;
+import br.com.brcodevalidator.strategy.BrCodeStatic;
+import br.com.brcodevalidator.exceptions.InvalidPayloadException;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -17,8 +22,8 @@ public class Main implements Runnable {
     @ArgGroup(exclusive = true, multiplicity = "1")
     private AlgorithmOptions algorithmOption;
 
-    @Option(names = {"-dr", "--detail-response"}, description = "Detailed response")
-    private boolean detailedResponse;
+    @Option(names = {"-rd", "--response-detailed"}, description = "Response Detailed")
+    private boolean responseDetailed;
 
     static class AlgorithmOptions {
            @Option(names = {"-d", "--dynamic"}, description = "Use dynamic validation algorithm")
@@ -33,7 +38,7 @@ public class Main implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("BRCV running!");
+        // System.out.println("BRCV running!");
 
         if(payload.isBlank()) {
             throw new InvalidPayloadException("Missing payload content (-p)");
@@ -47,7 +52,7 @@ public class Main implements Runnable {
 
         boolean isValidPayload = this.algorithm.validate(this.payload);
 
-        if(detailedResponse) {
+        if(responseDetailed) {
             System.out.println(String.format(
                 "The result of algorithm %s was that the payload is %s",
                 algorithmOption.dynamicStrategy ? "Dynamic" : "Static",
@@ -71,6 +76,6 @@ public class Main implements Runnable {
         });
 
         int exitCode = cmd.execute(args);
-        System.exit(exitCode)
+        System.exit(exitCode);
     }
 }

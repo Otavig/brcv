@@ -1,80 +1,37 @@
-package br.com.brcodevalidator;
+package br.com.brcodevalidator.utils;
 
-import br.com.brcodevalidator.interfaces.AlgorithmInterface;
-import br.com.brcodevalidator.strategy.BrCodeDinamico;
-import br.com.brcodevalidator.strategy.BrCodeEstatico;
+import java.nio.charset.StandardCharsets;
 
-import picocli.CommandLine;
-import picocli.CommandLine.Command;
-import picocli.CommandLine.Option;
-import picocli.CommandLine.ArgGroup;
+public final class Crc16False {
+    private static final int POLYNOMIAL = 0x1021;
+    private static final int INITIAL_VALUE = 0xFFFF;
 
-@Command(
-    name = "brcv",
-    version = "BRCV 1.0.0",
-    description = "BR Code validator",
-    mixinStandardHelpOptions = true
-)
-public class Main implements Runnable {
-    private AlgorithmInterface algorithm;
-
-    @ArgGroup(exclusive = true, multiplicity = "1")
-    private AlgorithmOptions algorithmOption;
-
-    @Option(names = {"-dr", "--detail-response"}, description = "Detailed response")
-    private boolean detailedResponse;
-
-    static class AlgorithmOptions {
-           @Option(names = {"-d", "--dynamic"}, description = "Use dynamic validation algorithm")
-           boolean dynamicStrategy;
-
-           @Option(names = {"-s", "--static"}, description = "Use static validation algorithm")
-           boolean staticStrategy;
+    private Crc16False() {
+        throw new IllegalStateException(
+                "The Crc16 class cannot/should not be instantiated"
+        );
     }
 
-    @Option(names = {"-p", "--payload"}, required = true, description = "Payload to be used")
-    String payload;
+    public static String encode(String payload) {
+        byte[] data = payload.getBytes(StandardCharsets.UTF_8);
 
-    @Override
-    public void run() {
-        System.out.println("BRCV running!");
+        int crc = INITIAL_VALUE;
 
-        if(payload.isBlank()) {
-            throw new InvalidPayloadException("Missing payload content (-p)");
-        }
+        for (byte value : data) {
+            crc ^= (value & 0xFF) << 8;
 
-        if (algorithmOption.dynamicStrategy) {
-            this.algorithm = BrCodeDinamico.getInstance();
-        } else {
-            this.algorithm = BrCodeEstatico.getInstance();
-        }
+            for (int bit = 0; bit < 8; bit++) {
+                if ((crc & 0x8000) != 0) {
+                    crc = (crc << 1) ^ POLYNOMIAL;
+                } else {
+                    crc <<= 1;
+                }
 
-        boolean isValidPayload = this.algorithm.validate(this.payload);
-
-        if(detailedResponse) {
-            System.out.println(String.format(
-                "The result of algorithm %s was that the payload is %s",
-                algorithmOption.dynamicStrategy ? "Dynamic" : "Static",
-                isValidPayload ? "Valid" : "Invalid"
-            ));
-        } else {
-            System.out.println(isValidPayload);
-        }
-    }
-
-    public static void main(String[] args) {
-        CommandLine cmd = new CommandLine(new Main());
-        cmd.setExecutionExceptionHandler((ex, commandLine, parseResult) -> {
-            if (ex instanceof InvalidPayloadException) {
-                commandLine.getErr().println(commandLine.getColorScheme().errorText("Validate error: " + ex.getMessage()));
-                return 1;
+                crc &= 0xFFFF;
             }
+        }
 
-            ex.printStackTrace();
-            return 2;
-        });
-
-        int exitCode = cmd.execute(args);
-        System.exit(exitCode);
+        return String.format("%04X", crc);
     }
+
 }

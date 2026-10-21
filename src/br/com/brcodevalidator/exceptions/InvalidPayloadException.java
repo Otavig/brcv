@@ -1,6 +1,6 @@
-package br.com.brvalidator.exceptions;
+package br.com.brcodevalidator.exceptions;
 
-class InvalidPayloadException extends RuntimeException  {
+public class InvalidPayloadException extends RuntimeException  {
     public InvalidPayloadException(String msg) {
         super(msg);
     }
