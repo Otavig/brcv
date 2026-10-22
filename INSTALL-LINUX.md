@@ -1,38 +1,31 @@
-# Instalação no Linux (e macOS)
+# brcv para Linux
 
-## Requisitos
-- Java 21 ou superior.
-  - Verifique com: `java -version`
-  - Se não tiver: instale o OpenJDK 21 pelo gerenciador de pacotes, por exemplo `sudo apt install openjdk-21-jdk` no Ubuntu/Debian ou `brew install openjdk@21` no macOS.
-- Maven, **só se for compilar pelo código-fonte** (o Maven não vem no projeto). Se você recebeu a pasta com `brcv.jar`, não precisa.
-  - Verifique com: `mvn -version`
-  - Se não tiver: `sudo apt install maven` (Ubuntu/Debian) ou `brew install maven` (macOS).
+Ferramenta de linha de comando para Pix (BR Code).
 
-## Compilar (só no código-fonte)
-Dentro da pasta do projeto:
+## Instalar (30 segundos)
+Dentro desta pasta:
 
-    chmod +x build.sh
-    ./build.sh --help
-
-O script compila com o Maven e roda o programa. O jar fica em `target/brcv.jar`.
-
-## Instalar
-Dentro da pasta (precisa do `target/brcv.jar`; se ele não existir, o script usa o Maven para gerar):
-
-    chmod +x install.sh
     ./install.sh
 
-O script verifica o Java, instala o programa em `~/.local/share/brcv` e cria o comando `brcv` em `~/.local/bin`.
+Abra um novo terminal e teste:
 
-## Testar
     brcv --version
-    brcv --help
 
-Se o comando não for encontrado, sua pasta `~/.local/bin` não está no PATH. Adicione esta linha ao `~/.bashrc` (ou `~/.zshrc`, se usa zsh) e abra um novo terminal:
+Não precisa instalar Java: a pasta `brcv-app` já traz tudo. Se ela não existir, o `install.sh` usa o `brcv.jar` e precisa de Java 21+.
 
-    export PATH="$HOME/.local/bin:$PATH"
+## Sem instalar
+    java -jar brcv.jar --help      # precisa de Java 21+
+    ./brcv-app/bin/brcv --help     # não precisa de Java
 
-Os comandos (`validate`, `decode`, `extract`, `create` e `fix-crc`) estão no [README.md](README.md).
+## Usar
+    brcv validate -p '<payload>' [-r]
+    brcv decode   -p '<payload>'
+    brcv extract  -p '<payload>'
+    brcv fix-crc  -p '<payload>'
+    brcv create --key <chave> --name <nome> --city <cidade> [--amount 10,50] [--txid X] [--description X]
+    brcv create --url <url>   --name <nome> --city <cidade> [--amount 10,50] [--txid X]
+
+Use aspas simples no payload (por causa do `*` e dos espaços). O tipo (estático/dinâmico) é detectado sozinho.
 
 ## Desinstalar
     ./install.sh --uninstall

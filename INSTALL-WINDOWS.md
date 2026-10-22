@@ -1,73 +1,32 @@
-# Instalação no Windows
+# brcv para Windows
 
-Existem três formas. Escolha uma.
+Ferramenta de linha de comando para Pix (BR Code).
 
-## Opção 1: Instalador `.exe` (sem precisar de Java)
-Use se você recebeu o arquivo `brcv-1.0.0.exe`.
-
-1. Dê dois cliques em `brcv-1.0.0.exe` e siga o assistente.
-2. Abra um novo terminal (PowerShell ou CMD) e rode:
+## Opção 1: Instalador `.exe` (recomendado, não precisa de Java)
+1. Dê dois cliques em `brcv-<versão>-setup.exe` e clique em Avançar/Instalar.
+2. Abra um **novo** PowerShell ou CMD e teste:
 
        brcv --version
 
-O Java já vem incluído nesse instalador.
+Instala só para o seu usuário (sem Administrador) e já coloca o `brcv` no PATH.
 
-## Opção 2: Script `install.ps1` (precisa de Java)
-Use se você recebeu a pasta com `brcv.jar` e `install.ps1`. O Maven **não** é necessário.
+## Opção 2: `install.bat` (precisa de Java 21+)
+Dê dois cliques em `install.bat`. Ele instala o `brcv.jar` e cria o comando `brcv`. Abra um **novo** terminal e teste `brcv --version`.
+Sem Java: `choco install temurin21 -y` ou baixe em https://adoptium.net.
 
-1. Tenha o Java 21 ou superior (veja a seção "Instalar o Java e o Maven" abaixo).
-2. Abra o PowerShell dentro da pasta extraída e rode:
-
-       powershell -ExecutionPolicy Bypass -File .\install.ps1
-
-O script verifica o Java, instala o programa em `%LOCALAPPDATA%\brcv` e adiciona a pasta do comando ao PATH do seu usuário.
-
-3. Abra um **novo** terminal (o PATH só vale depois de reabrir) e teste:
-
-       brcv --version
-       brcv --help
-
-Para desinstalar:
-
-    powershell -ExecutionPolicy Bypass -File .\install.ps1 -Uninstall
-
-## Opção 3: Compilar pelo código-fonte (`build.ps1`)
-Precisa de Java 21+ **e de Maven** (o Maven não vem no projeto, não existe `mvnw`).
-
-    .\build.ps1 --help
-
-O `build.ps1` compila e roda o programa. Se faltar o Java ou o Maven, ele pergunta se você quer instalar pelo Chocolatey: responda `y`. Para isso o PowerShell precisa estar aberto **como Administrador**.
-
-Depois de compilar, você pode instalar o comando com a Opção 2.
-
-## Instalar o Java e o Maven
-
-### Pelo Chocolatey (recomendado)
-O Chocolatey é um instalador de programas para o Windows.
-
-1. Abra o PowerShell **como Administrador** (botão direito no PowerShell > Executar como administrador).
-2. Instale o Chocolatey (comando oficial, de https://chocolatey.org/install):
-
-       Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-
-3. Feche e abra o PowerShell como Administrador de novo e instale:
-
-       choco install temurin21 -y
-       choco install maven -y
-
-4. Abra um **novo** terminal e confira:
-
-       java -version
-       mvn -version
-
-### Manualmente (sem Chocolatey)
-- Java: baixe o Temurin 21 em https://adoptium.net e instale.
-- Maven:
-  1. Baixe o "Binary zip archive" em https://maven.apache.org/download.cgi
-  2. Extraia em uma pasta, por exemplo `C:\tools\apache-maven-3.9.9`
-  3. Adicione `C:\tools\apache-maven-3.9.9\bin` ao PATH (Painel de Controle > Variáveis de ambiente > Path)
-  4. Abra um novo terminal e rode `mvn -version`
+## Sem instalar
+    java -jar brcv.jar --help
 
 ## Usar
+    brcv validate -p '<payload>' [-r]
+    brcv decode   -p '<payload>'
+    brcv extract  -p '<payload>'
+    brcv fix-crc  -p '<payload>'
+    brcv create --key <chave> --name <nome> --city <cidade> [--amount 10,50] [--txid X] [--description X]
+    brcv create --url <url>   --name <nome> --city <cidade> [--amount 10,50] [--txid X]
 
-Os comandos (`validate`, `decode`, `extract`, `create` e `fix-crc`) estão no [README.md](README.md).
+No PowerShell use aspas simples no payload. O tipo (estático/dinâmico) é detectado sozinho.
+
+## Desinstalar
+- Exe: Configurações > Aplicativos > brcv > Desinstalar.
+- install.bat: `powershell -ExecutionPolicy Bypass -File .\install.ps1 -Uninstall`
