@@ -2,3 +2,4 @@ target/
 dist/
 dependency-reduced-pom.xml
 scope.txt
+.tools/
