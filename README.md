@@ -33,3 +33,8 @@ Precisa de Java 21+ e Maven (o Maven não vem no projeto).
     ./build.sh validate -p '<payload>'
 
 Só gerar o jar: `mvn package` (resultado em `target/brcv.jar`).
+
+## Gerar release
+
+    ./release.sh                                                  # Linux -> dist/brcv-<versao>-linux.tar.gz
+    powershell -ExecutionPolicy Bypass -File .\release.ps1        # Windows -> dist\brcv-<versao>-windows.zip
