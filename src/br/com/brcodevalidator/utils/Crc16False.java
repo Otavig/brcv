@@ -13,8 +13,10 @@ public final class Crc16False {
     }
 
     public static String encode(String payload) {
-        byte[] data = payload.getBytes(StandardCharsets.UTF_8);
+        return encode(payload.getBytes(StandardCharsets.UTF_8));
+    }
 
+    public static String encode(byte[] data) {
         int crc = INITIAL_VALUE;
 
         for (byte value : data) {
